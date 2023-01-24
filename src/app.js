@@ -348,9 +348,86 @@
             // }
             // ReactDOM.render(<Apps />,root)
 
-            
+                 
+            const root = document.querySelector('#root')
+            function App(){
+                const[activity,setAcitivity]=React.useState('')
+                const [edit,setEdit] = React.useState({})
+                const[todos,setTodos]= React.useState([])
+                function getId(){
+                    return Date.now()
+                }
+                function addToDoHandler(event){
+                    event.preventDefault();
+
+                    if(edit.id){
+                        const updatedTodo = {
+                            id : edit.id,
+                            activity : activity, 
+                        }
+                        
+                        const editTodoIndex = todos.findIndex(function(todo){
+                            return todo.id == edit.id
+                        })
+                        const newTodo = [
+                            ...todos
+                        ]
+                        newTodo[editTodoIndex]=updatedTodo
+                        setTodos(newTodo)
+                        
+
+                        return cancelEditHandler();
+                    }
 
 
+                    setTodos([...todos,{
+                        id:getId(),
+                        activity:activity
+                    }]);
+                    setAcitivity('')
+                }
+               
+                function removeToDo(todoID){
+                    const getRemove=todos.filter(function(todo){
+                        console.log(todo.id,todoID)
+                        return todo.id !== todoID
+                        
+                    })
+                    setTodos(getRemove)
+                    if(edit.id)cancelEditHandler()
+                }
+
+                function editToDO(todo){
+                    setAcitivity(todo.activity) 
+                    setEdit(todo)
+                }
+                function cancelEditHandler(){
+                    setEdit({});
+                    setAcitivity('');
+                }
+                return(
+                    <div>
+                        <form onSubmit={addToDoHandler}>
+                            <input type='text' value={activity} placeholder='masukan aktivitas' onChange={function(event){setAcitivity(event.target.value)}} />
+                            <button type='submit' >{edit.id ? 'simpan perubahan':'tambah'}</button>
+                            {edit.id && <button onClick={cancelEditHandler}>batal edit</button> }
+                            
+                        </form>
+                        <ul>
+                            {todos.map(function(todo){
+                                return(
+                                <li key={todo.id}>
+                                    {todo.activity}
+                                <button onClick={editToDO.bind(this,todo)}>edit</button>    
+                                <button onClick={removeToDo.bind(this,todo.id)}>hapus</button>
+                                </li>)
+                            })}
+                        </ul>
+                    </div>
+                )
+            }
+            ReactDOM.render(<App />,root)
+           
 
             
 

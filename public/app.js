@@ -314,3 +314,73 @@
 
 // }
 // ReactDOM.render(<Apps />,root)
+
+const root = document.querySelector('#root');
+function App() {
+  const [activity, setAcitivity] = React.useState('');
+  const [edit, setEdit] = React.useState({});
+  const [todos, setTodos] = React.useState([]);
+  function getId() {
+    return Date.now();
+  }
+  function addToDoHandler(event) {
+    event.preventDefault();
+    if (edit.id) {
+      const updatedTodo = {
+        id: edit.id,
+        activity: activity
+      };
+      const editTodoIndex = todos.findIndex(function (todo) {
+        return todo.id == edit.id;
+      });
+      const newTodo = [...todos];
+      newTodo[editTodoIndex] = updatedTodo;
+      setTodos(newTodo);
+      return cancelEditHandler();
+    }
+    setTodos([...todos, {
+      id: getId(),
+      activity: activity
+    }]);
+    setAcitivity('');
+  }
+  function removeToDo(todoID) {
+    const getRemove = todos.filter(function (todo) {
+      console.log(todo.id, todoID);
+      return todo.id !== todoID;
+    });
+    setTodos(getRemove);
+    if (edit.id) cancelEditHandler();
+  }
+  function editToDO(todo) {
+    setAcitivity(todo.activity);
+    setEdit(todo);
+  }
+  function cancelEditHandler() {
+    setEdit({});
+    setAcitivity('');
+  }
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("form", {
+    onSubmit: addToDoHandler
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    value: activity,
+    placeholder: "masukan aktivitas",
+    onChange: function (event) {
+      setAcitivity(event.target.value);
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    type: "submit"
+  }, edit.id ? 'simpan perubahan' : 'tambah'), edit.id && /*#__PURE__*/React.createElement("button", {
+    onClick: cancelEditHandler
+  }, "batal edit")), /*#__PURE__*/React.createElement("ul", null, todos.map(function (todo) {
+    return /*#__PURE__*/React.createElement("li", {
+      key: todo.id
+    }, todo.activity, /*#__PURE__*/React.createElement("button", {
+      onClick: editToDO.bind(this, todo)
+    }, "edit"), /*#__PURE__*/React.createElement("button", {
+      onClick: removeToDo.bind(this, todo.id)
+    }, "hapus"));
+  })));
+}
+ReactDOM.render( /*#__PURE__*/React.createElement(App, null), root);
